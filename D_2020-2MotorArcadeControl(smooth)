@@ -1,0 +1,50 @@
+vex::controller Controller1 = vex::controller();
+vex::motor MotorLeft = vex::motor(PORT10, true);
+vex::motor MotorRight = vex::motor(PORT20);
+int main() {
+// Initializing Robot Configuration. DO NOT REMOVE!
+vexcodeInit();
+double angleStick=0;
+double pi=2*acos(0);
+double x=0;
+double y=0;
+double x2=0;
+double y2=0;
+double totalPower=0;
+double leftMotor=0;
+double rightMotor=0;
+//double totalPower2=0;
+
+while(1){
+ x=Controller1.Axis4.value();
+ y=Controller1.Axis3.value();
+ //y2=Controller1.Axis1.value();
+ //x2=Controller1.Axis2.value();
+    if(x<0 && y<0){angleStick=atan(y/x)-pi;}    //Identifying the angle of the stick
+    else if(x<0) {angleStick=atan(y/x)+pi;}
+    else{angleStick = atan(y/x);}
+
+ totalPower=sqrt(y*y+x*x); //finding the percentage of how far out the stick is pushed
+
+// this part is trying to optimize the motors, and make it so that it turns quickly
+// if you were to take raw controller inputs, then if you had the stick at a 45 degree angle it would return
+// an x value of ~.7 and a y value of ~.7 this converts that into 1,1 and then says ok that means the left
+// motor should be on totalPower, and the left motor should be between totalpower, and -totalPower and it
+// determines where in that range it is by doing cos(2*angle)*totalPower. The same type of thing is done
+// but with slight variations for each of the 4 quadrants
+
+    if(angleStick<=-1*pi/2)    {leftMotor=-1*totalPower;                   rightMotor=totalPower*cos(2*angleStick);} 
+    else if(angleStick<=0)     {leftMotor=totalPower*cos(2*angleStick);    rightMotor=-1*totalPower;}    
+    else if (angleStick<=pi/2) {leftMotor=totalPower;                      rightMotor=totalPower*-1*cos(2*angleStick);}
+    else                       {leftMotor=totalPower*-1*cos(2*angleStick); rightMotor=totalPower;}
+    
+ Controller1.Screen.clearLine();
+ Controller1.Screen.print("test=%d",x); //hopefully will give a variables value on the controller
+
+ MotorLeft.spin(directionType::fwd, rightMotor, velocityUnits::pct); //apply variables to motors
+ MotorRight.spin(directionType::fwd, leftMotor, velocityUnits::pct);
+ 
+ task::sleep(20);
+}
+}
+
