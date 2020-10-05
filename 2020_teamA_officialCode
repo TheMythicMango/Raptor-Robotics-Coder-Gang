@@ -8,9 +8,13 @@
 /*----------------------------------------------------------------------------*/
 
 // ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Vision15             vision        15              
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
+#include "VisionSensor.h"
 
 using namespace vex;
 
@@ -36,10 +40,11 @@ void autonomous (void) {
 
 void usercontrol (void) {
   while(1){
+    
+
 //Basic movement controls
     RightMotor.spin(vex::directionType::fwd, 127*((exp_value)^Controller1.Axis2.position()), vex::velocityUnits::pct);
-    RightMotor.spin(vex::directionType::fwd, 127*((exp_value)^Controller1.Axis3.position()), vex::velocityUnits::pct);
-    LeftMotor.spin(vex::directionType::fwd, Controller1.Axis3.position(), vex::velocityUnits::pct);
+    LeftMotor.spin(vex::directionType::fwd, 127*((exp_value)^Controller1.Axis3.position()), vex::velocityUnits::pct);
     if(Controller1.ButtonDown.pressing()){
       MiddleMotor.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
     }
@@ -66,6 +71,8 @@ void usercontrol (void) {
     }
 
 //multi commands
+    
+    //bring the balls up
     if(Controller1.ButtonA.pressing()){
       frontMotorBottom.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
       bottomMotorSpin.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
@@ -76,6 +83,20 @@ void usercontrol (void) {
       bottomMotorSpin.stop(vex::brakeType::brake);
       backMotorTop.stop(vex::brakeType::brake);
     }
+
+    //bring balls down
+    if(Controller1.ButtonA.pressing()){
+      frontMotorBottom.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+      bottomMotorSpin.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+      backMotorTop.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+    }
+    else{
+      frontMotorBottom.stop(vex::brakeType::brake);
+      bottomMotorSpin.stop(vex::brakeType::brake);
+      backMotorTop.stop(vex::brakeType::brake);
+    }
+
+    //Get rid of ball override function
     if(Controller1.ButtonX.pressing()){
       bottomMotorSpin.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
       backMotorTop.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
@@ -83,6 +104,8 @@ void usercontrol (void) {
       bottomMotorSpin.stop(vex::brakeType::brake);
       backMotorTop.stop(vex::brakeType::brake);
     }
+
+//color sensor to kick ball out
     vex::task::sleep(50);
   }
 }
