@@ -1,0 +1,92 @@
+/*----------------------------------------------------------------------------*/
+/*                                                                            */
+/*    Module:       main.cpp                                                  */
+/*    Author:       C:\Users\parodwil000                                      */
+/*    Created:      Thu Sep 10 2020                                           */
+/*    Description:  V5 project                                                */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
+
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// ---- END VEXCODE CONFIGURED DEVICES ----
+#include "math.h"
+#include "vex.h"
+
+using namespace vex;
+
+brain robotbrain;
+controller cont;
+motor Lf = motor(PORT1, ratio18_1, false);
+motor Lb = motor(PORT2, ratio18_1, false);
+motor Rb = motor(PORT9, ratio18_1, true);
+motor Rf = motor(PORT10, ratio18_1, true);
+motor arm1 = motor(PORT3, ratio18_1, true);
+motor arm2 = motor(PORT4, ratio18_1, true);
+motor claw1 = motor(PORT5, ratio18_1, true);
+motor claw2 = motor(PORT6, ratio18_1, true);
+motor clawBallShooter = motor(PORT7, ratio18_1,true);
+controller Controller1 = controller(primary);
+float LfVal;
+float LbVal;
+float RbVal;
+float RfVal;
+bool strafe = false;
+int main() {
+  // Initializing Robot Configuration. DO NOT REMOVE!
+  vexcodeInit();
+  while (true){
+    if (abs(Controller1.Axis3.value()) > abs(Controller1.Axis1.value())) {
+      LfVal = Controller1.Axis3.value();
+      LbVal = Controller1.Axis3.value();
+      RbVal = Controller1.Axis3.value();
+      RfVal = Controller1.Axis3.value();
+      strafe = true;
+    }
+    else if (abs(Controller1.Axis3.value()) < abs(Controller1.Axis1.value())){
+      LfVal = Controller1.Axis1.value();
+      LbVal = Controller1.Axis1.value();
+      RbVal = Controller1.Axis1.value();
+      RfVal = Controller1.Axis1.value();
+    }
+    
+    if (abs(Controller1.Axis4.value()) > abs(Controller1.Axis1.value()) && abs(Controller1.Axis4.value()) > abs(Controller1.Axis3.value())){
+      Lf.spin(vex::directionType::fwd, Controller1.Axis4.value(), vex::velocityUnits::pct);
+      Lb.spin(vex::directionType::fwd, Controller1.Axis4.value(), vex::velocityUnits::pct);
+      Rf.spin(vex::directionType::rev, Controller1.Axis4.value(), vex::velocityUnits::pct);
+      Rb.spin(vex::directionType::rev, Controller1.Axis4.value(), vex::velocityUnits::pct);
+      
+    }
+    else if (strafe){
+      Brain.Screen.print("You dimheaded twit-wads");
+      Lf.spin(vex::directionType::rev, LfVal,vex::velocityUnits::pct);
+      Lb.spin(vex::directionType::fwd, LfVal,vex::velocityUnits::pct);
+      Rf.spin(vex::directionType::fwd, LfVal,vex::velocityUnits::pct);
+      Rb.spin(vex::directionType::rev, LfVal,vex::velocityUnits::pct);
+    }
+    else{
+      Lf.spin(vex::directionType::fwd, LfVal, vex::velocityUnits::pct);
+      Lb.spin(vex::directionType::fwd, LbVal, vex::velocityUnits::pct);
+      Rb.spin(vex::directionType::fwd, RbVal, vex::velocityUnits::pct);
+      Rf.spin(vex::directionType::fwd, RfVal, vex::velocityUnits::pct);
+    }
+    
+    if (Controller1.ButtonR1.pressing()){
+      arm1.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+      arm2.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+  }
+    else if (Controller1.ButtonR2.pressing()){
+      arm1.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+      arm2.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+    }
+    
+    if (Controller1.ButtonL1.pressing()){
+      //put claw code here
+      claw1.spin(vex::directionType::fwd,127, vex::velocityUnits::pct);
+      claw2.spin(vex::directionType::fwd,127, vex::velocityUnits::pct);
+      clawBallShooter.spin(vex::directionType::fwd,127, vex::velocityUnits::pct);
+    }
+    else if (Controller1.ButtonL1.pressing()){
+      clawBallShooter.spin(vex::directionType::rev,127, vex::velocityUnits::pct);
+    }
+}
+}
