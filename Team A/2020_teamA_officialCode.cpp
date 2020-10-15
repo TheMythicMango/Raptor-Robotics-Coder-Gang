@@ -30,6 +30,7 @@ vex::motor frontMotorBottom = vex::motor(vex::PORT18, true);
 vex::motor backMotorTop = vex::motor(vex::PORT19);
 vex::motor rightClaw = vex::motor(vex::PORT5);
 vex::motor leftClaw = vex::motor(vex::PORT6);
+vex::motor frontMotorTop = vex::motor(vex::PORT4);
 //Vision sensor is in PORT15
 
 vex::controller Controller1 = vex::controller();
@@ -39,7 +40,7 @@ bool isRed = false;
 bool isBlue = true;
 
 //theta values for the auton
-int thetaOne = 90;
+int thetaOne = -270;
 int thetaTwo = 120;
 int thetaThree = 45;
 int thetaFour = 45;
@@ -59,7 +60,7 @@ void setRed(){
 
 //functions used for autonomous
 //move bot forwards, enter speed you want it to go and how long
-void moveForwardx(int speed, int milliseconds){
+void moveForwardx(int speed, double milliseconds){
   RightMotor.spin(vex::directionType::fwd, speed, velocityUnits::pct);
   LeftMotor.spin(vex::directionType::fwd, speed, velocityUnits::pct);
   vex::task::sleep(milliseconds);
@@ -68,8 +69,7 @@ void moveForwardx(int speed, int milliseconds){
 
 //rotates bot "θ" degrees
 void rotateTheta(int theta){
-  RightMotor.rotateFor(theta, vex::rotationUnits::deg);
-  LeftMotor.rotateFor(theta*-1, vex::rotationUnits::deg);
+  RightMotor.rotateFor(theta, vex::rotationUnits::deg);  LeftMotor.rotateFor(theta*-1, vex::rotationUnits::deg);
 }
 
 
@@ -92,7 +92,32 @@ void moveOneBallUp(){
 
 //testing for now/ ***LEARN ABOUT PIDS AND USE THEM
 void autonomous (void) {
-  moveForwardx(50, 200);
+  RightMotor.spin(vex::directionType::fwd, 30, velocityUnits::pct);
+  LeftMotor.spin(vex::directionType::fwd, 30, velocityUnits::pct);
+  vex::task::sleep(1000);
+  RightMotor.stop(vex::brakeType::brake);
+  LeftMotor.stop(vex::brakeType::brake);
+  LeftMotor.rotateFor(670, vex::rotationUnits::deg); 
+  LeftMotor.stop(vex::brakeType::brake);
+  RightMotor.spin(vex::directionType::fwd, 30, velocityUnits::pct);
+  LeftMotor.spin(vex::directionType::fwd, 30, velocityUnits::pct);
+  vex::task::sleep(1800);
+  RightMotor.stop(vex::brakeType::brake);
+  LeftMotor.stop(vex::brakeType::brake);
+  rightClaw.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
+  leftClaw.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+  frontMotorBottom.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+  bottomMotorSpin.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+  backMotorTop.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+  frontMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+  vex::task::sleep(1000);
+  rightClaw.stop(vex::brakeType::brake);
+  leftClaw.stop(vex::brakeType::brake);
+  frontMotorBottom.stop(vex::brakeType::brake);
+  bottomMotorSpin.stop(vex::brakeType::brake);
+  backMotorTop.stop(vex::brakeType::brake);
+  frontMotorTop.stop(vex::brakeType::brake);
+  /*
   rotateTheta(thetaOne);
   moveForwardx(30, 200);
   moveClawsIn(100); moveOneBallUp();//move ball inside as(ONLY ONE) well as rotate claws in
@@ -112,6 +137,7 @@ void autonomous (void) {
   moveClawsIn(100); moveOneBallUp();
   RightMotor.rotateFor(90, vex::rotationUnits::deg);
   LeftMotor.rotateFor(-90, vex::rotationUnits::deg);
+  */
 }
 
 
@@ -120,8 +146,8 @@ void usercontrol (void) {
 //Basic movement controls
     
     //spins each motor forward based on the position of the controller axis
-    RightMotor.spin(vex::directionType::fwd, Controller1.Axis2.position()/1.1, vex::velocityUnits::pct);
-    LeftMotor.spin(vex::directionType::fwd, Controller1.Axis3.position()/1.1, vex::velocityUnits::pct);
+    RightMotor.spin(vex::directionType::fwd, Controller1.Axis2.position(), vex::velocityUnits::pct);
+    LeftMotor.spin(vex::directionType::fwd, Controller1.Axis3.position(), vex::velocityUnits::pct);
     
     //used to strafe left or right using the middle wheel, using the down arrow button and button B on the controller
     if(Controller1.ButtonDown.pressing()){
@@ -152,48 +178,18 @@ void usercontrol (void) {
     }
     
 
-//multi commands
-    
-    //bring the balls up
-    if(Controller1.ButtonL1.pressing()){
-      frontMotorBottom.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
-      bottomMotorSpin.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
-      backMotorTop.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
-    }
-    
-    //bring balls down
-    else if(Controller1.ButtonL2.pressing()){
-      frontMotorBottom.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
-      bottomMotorSpin.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
-      backMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
-    }
-    
-    //Get rid of ball override function, gets rid of ball in the middle of the bot
-    else if(Controller1.ButtonX.pressing()){
-      bottomMotorSpin.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
-      backMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
-      vex::task::sleep(500);
-      bottomMotorSpin.stop(vex::brakeType::brake);
-      backMotorTop.stop(vex::brakeType::brake);
-    }
-    else{
-      frontMotorBottom.stop(vex::brakeType::brake);
-      bottomMotorSpin.stop(vex::brakeType::brake);
-      backMotorTop.stop(vex::brakeType::brake);
-    }
-
-
-//change calibration of vision sensor to choose if ball is red or blue
+//multi commands    
+    //change calibration of vision sensor to choose if ball is red or blue
     //by clicking the two buttons, we can set the boolean variables to true or false, letting us control what ball we would like to kick out.
-    Controller1.ButtonLeft.pressed(setRed);
-    Controller1.ButtonRight.pressed(setBlue);
+    if(Controller1.ButtonRight.pressing()){
+      setBlue();
+    }
+    else if(Controller1.ButtonLeft.pressing()){
+      setRed();
+    }
     
     //prints what color ball we are currently using
-    if(isBlue)
-      Brain.Screen.print("Color Calibrated: Blue");
-    else if(isRed){
-      Brain.Screen.print("Color Calibrated: Red");
-    }
+    Brain.Screen.print("Is Blue: ", isBlue);
 
 
 //color sensor to kick ball out
@@ -207,18 +203,56 @@ void usercontrol (void) {
       else{
         return;
       vex::task::sleep(10);
+      Brain.Screen.clearScreen();
       }
     }
-    
+   
     //same code as override function ButtonX, but only will occur if the largest object exists inside of our snapshot.
     if(Vision1.largestObject.exists){
       bottomMotorSpin.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
       backMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+      frontMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
       vex::task::sleep(500);
       bottomMotorSpin.stop(vex::brakeType::brake);
       backMotorTop.stop(vex::brakeType::brake);
-    }    
+      frontMotorTop.stop(vex::brakeType::brake);
+    }   
+
+    //bring the balls up
+    else if(Controller1.ButtonL1.pressing()){
+      frontMotorBottom.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+      bottomMotorSpin.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+      backMotorTop.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+      frontMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+    }
+
+    //bring balls down
+    else if(Controller1.ButtonL2.pressing()){
+      frontMotorBottom.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+      bottomMotorSpin.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+      backMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+      frontMotorTop.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+    }
     
+    //Get rid of ball override function, gets rid of ball in the middle of the bot
+    else if(Controller1.ButtonX.pressing()){
+      bottomMotorSpin.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+      backMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+      vex::task::sleep(500);
+      bottomMotorSpin.stop(vex::brakeType::brake);
+    }
+    else if(Controller1.ButtonUp.pressing()){
+      bottomMotorSpin.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+      backMotorTop.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+      frontMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+    }
+    else{
+      frontMotorBottom.stop(vex::brakeType::brake);
+      bottomMotorSpin.stop(vex::brakeType::brake);
+      backMotorTop.stop(vex::brakeType::brake);
+      frontMotorTop.stop(vex::brakeType::brake);
+    }
+
     //so our bot doesnt blow up to due performing everything as fast as possible
     vex::task::sleep(50);
   }
@@ -227,12 +261,11 @@ void usercontrol (void) {
 int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
-
   //sets code for compitions, pretty self explanatory
   Competition.autonomous( autonomous );
   Competition.drivercontrol(usercontrol);
   
   while(1){
-    vex::task::sleep(200);
+    vex::task::sleep(30);
   }
 }
