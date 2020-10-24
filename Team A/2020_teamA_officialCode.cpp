@@ -94,50 +94,31 @@ void moveOneBallUp(){
 void autonomous (void) {
   RightMotor.spin(vex::directionType::fwd, 30, velocityUnits::pct);
   LeftMotor.spin(vex::directionType::fwd, 30, velocityUnits::pct);
-  vex::task::sleep(1000);
-  RightMotor.stop(vex::brakeType::brake);
-  LeftMotor.stop(vex::brakeType::brake);
-  LeftMotor.rotateFor(670, vex::rotationUnits::deg); 
-  LeftMotor.stop(vex::brakeType::brake);
-  RightMotor.spin(vex::directionType::fwd, 30, velocityUnits::pct);
-  LeftMotor.spin(vex::directionType::fwd, 30, velocityUnits::pct);
-  vex::task::sleep(1800);
-  RightMotor.stop(vex::brakeType::brake);
-  LeftMotor.stop(vex::brakeType::brake);
+  vex::task::sleep(2100);
   rightClaw.spin(vex::directionType::rev, 100, vex::velocityUnits::pct);
   leftClaw.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
   frontMotorBottom.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
   bottomMotorSpin.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
   backMotorTop.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
   frontMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
-  vex::task::sleep(1000);
+  vex::task::sleep(1200);
   rightClaw.stop(vex::brakeType::brake);
   leftClaw.stop(vex::brakeType::brake);
   frontMotorBottom.stop(vex::brakeType::brake);
   bottomMotorSpin.stop(vex::brakeType::brake);
   backMotorTop.stop(vex::brakeType::brake);
   frontMotorTop.stop(vex::brakeType::brake);
-  /*
-  rotateTheta(thetaOne);
-  moveForwardx(30, 200);
-  moveClawsIn(100); moveOneBallUp();//move ball inside as(ONLY ONE) well as rotate claws in
-  rotateTheta(180);
-  moveForwardx(30, 200);
-  rotateTheta(120);
-  moveForwardx(40, 300);
-  rotateTheta(45);
-  moveForwardx(30, 200);
-  moveOneBallUp();//move ball inside up. ONLY ONE BALL
-  rotateTheta(180);
-  moveForwardx(30, 200);
-  rotateTheta(45);
-  moveForwardx(50, 300);
-  rotateTheta(45);
-  moveForwardx(30,  200);
-  moveClawsIn(100); moveOneBallUp();
-  RightMotor.rotateFor(90, vex::rotationUnits::deg);
-  LeftMotor.rotateFor(-90, vex::rotationUnits::deg);
-  */
+  RightMotor.stop(vex::brakeType::brake);
+  LeftMotor.stop(vex::brakeType::brake);
+  vex::task::sleep(50);
+  RightMotor.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+  LeftMotor.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+  vex::task::sleep(1500);
+  LeftMotor.spin(vex::directionType::rev, 50, vex::velocityUnits::pct);
+  vex::task::sleep(150);
+  RightMotor.stop(vex::brakeType::brake);
+  LeftMotor.stop(vex::brakeType::brake);
+  
 }
 
 
@@ -192,38 +173,36 @@ void usercontrol (void) {
     Brain.Screen.print("Is Blue: ", isBlue);
 
 
-//color sensor to kick ball out
-    
-    //takes 5 snapshots with the vision sensor, depending on what color we have, 50 milliseconds in between.
-    for(int i = 1; i < 5; i++){
+
+
+    //bring the balls up
+    if(Controller1.ButtonL1.pressing()){
+    //if calibration is blue, look for blue. If calibration is red, look for red.
       if(isBlue)
         Vision1.takeSnapshot(SIG_BLUE);
       else if(isRed)
         Vision1.takeSnapshot(SIG_RED);
       else{
         return;
-      vex::task::sleep(10);
-      Brain.Screen.clearScreen();
       }
-    }
    
-    //same code as override function ButtonX, but only will occur if the largest object exists inside of our snapshot.
-    if(Vision1.largestObject.exists){
-      bottomMotorSpin.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
-      backMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
-      frontMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
-      vex::task::sleep(500);
-      bottomMotorSpin.stop(vex::brakeType::brake);
-      backMotorTop.stop(vex::brakeType::brake);
-      frontMotorTop.stop(vex::brakeType::brake);
-    }   
-
-    //bring the balls up
-    else if(Controller1.ButtonL1.pressing()){
+      //looks for object of color we have calibrated. If there is nothing, it brings the balls up like normal.
+      if(Vision1.largestObject.exists){
+        bottomMotorSpin.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+        backMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+        frontMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+        vex::task::sleep(500);
+        bottomMotorSpin.stop(vex::brakeType::brake);
+        backMotorTop.stop(vex::brakeType::brake);
+        frontMotorTop.stop(vex::brakeType::brake);
+      }
+      //if ball color is not found
+      else{
       frontMotorBottom.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
       bottomMotorSpin.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
       backMotorTop.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
       frontMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+      }
     }
 
     //bring balls down
