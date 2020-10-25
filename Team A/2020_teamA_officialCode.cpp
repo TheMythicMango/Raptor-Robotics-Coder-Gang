@@ -168,16 +168,19 @@ void usercontrol (void) {
     else if(Controller1.ButtonLeft.pressing()){
       setRed();
     }
+    else{
+      return; 
+    }
     
     //prints what color ball we are currently using
     Brain.Screen.print("Is Blue: ", isBlue);
 
 
-
+//color sensor to kick ball out
 
     //bring the balls up
     if(Controller1.ButtonL1.pressing()){
-    //if calibration is blue, look for blue. If calibration is red, look for red.
+  
       if(isBlue)
         Vision1.takeSnapshot(SIG_BLUE);
       else if(isRed)
@@ -186,7 +189,7 @@ void usercontrol (void) {
         return;
       }
    
-      //looks for object of color we have calibrated. If there is nothing, it brings the balls up like normal.
+    //same code as override function ButtonX, but only will occur if the largest object exists inside of our snapshot.
       if(Vision1.largestObject.exists){
         bottomMotorSpin.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
         backMotorTop.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
@@ -196,7 +199,6 @@ void usercontrol (void) {
         backMotorTop.stop(vex::brakeType::brake);
         frontMotorTop.stop(vex::brakeType::brake);
       }
-      //if ball color is not found
       else{
       frontMotorBottom.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
       bottomMotorSpin.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
