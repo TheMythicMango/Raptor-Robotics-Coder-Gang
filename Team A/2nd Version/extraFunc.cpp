@@ -91,10 +91,10 @@ void UserControl(void){
     setRightDriveFront(vex::directionType::fwd, (-Controller.Axis2.value() + Controller.Axis1.value()));
     setRightDriveBack(vex::directionType::fwd, (-Controller.Axis2.value() - Controller.Axis1.value()));
         
-    if(Controller.ButtonR1.pressing()){
+    if(Controller.ButtonR2.pressing()){
       SpinClawsIn();
     }
-    else if(Controller.ButtonR2.pressing()){
+    else if(Controller.ButtonR1.pressing()){
       SpinClawsOut();
     }
     else if(Controller.ButtonX.pressing()){
