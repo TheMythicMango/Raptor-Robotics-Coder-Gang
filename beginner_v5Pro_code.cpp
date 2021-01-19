@@ -49,33 +49,35 @@ void autonomous(void){
 
 
 void driverControl(void){
-  //direction type, a speed(0, 127), a velocity unit
-  LeftMotor.spin(vex::directionType::rev, Controller.Axis3.value(), vex::velocityUnits::pct);
-  RightMotor.spin(vex::directionType::fwd, Controller.Axis2.value(), vex::velocityUnits::pct);
+  while(1){
+    //direction type, a speed(0, 127), a velocity unit
+    LeftMotor.spin(vex::directionType::rev, Controller.Axis3.value(), vex::velocityUnits::pct);
+    RightMotor.spin(vex::directionType::fwd, Controller.Axis2.value(), vex::velocityUnits::pct);
 
-  //moves claws inwards
-  if(Controller.ButtonL1.pressing()){
-    LeftClaw.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
-    RightClaw.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
-  }
-  //moves claws outwards
-  if(Controller.ButtonL2.pressing()){
-    LeftClaw.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
-    RightClaw.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
-  }
-  //moves intake inwards
-  if(Controller.ButtonR1.pressing()){
-    IntakeMotor.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
-  }
-  //moves intake outwards
-  if(Controller.ButtonR2.pressing()){
-    IntakeMotor.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
-  }
-  else{
-    //turn all motors to 0
-    LeftClaw.spin(vex::directionType::fwd, 0, vex::velocityUnits::pct);
-    RightClaw.spin(vex::directionType::rev, 0, vex::velocityUnits::pct);
-    IntakeMotor.spin(vex::directionType::fwd, 0, vex::velocityUnits::pct);
+    //moves claws inwards
+    if(Controller.ButtonL1.pressing()){
+      LeftClaw.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+      RightClaw.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+    }
+    //moves claws outwards
+    if(Controller.ButtonL2.pressing()){
+      LeftClaw.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+      RightClaw.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+    }
+    //moves intake inwards
+    if(Controller.ButtonR1.pressing()){
+      IntakeMotor.spin(vex::directionType::fwd, 127, vex::velocityUnits::pct);
+    }
+    //moves intake outwards
+    if(Controller.ButtonR2.pressing()){
+      IntakeMotor.spin(vex::directionType::rev, 127, vex::velocityUnits::pct);
+    }
+    else{
+      //turn all motors to 0
+      LeftClaw.spin(vex::directionType::fwd, 0, vex::velocityUnits::pct);
+      RightClaw.spin(vex::directionType::rev, 0, vex::velocityUnits::pct);
+      IntakeMotor.spin(vex::directionType::fwd, 0, vex::velocityUnits::pct);
+    }
   }
 }
 
